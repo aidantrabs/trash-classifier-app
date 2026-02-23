@@ -23,11 +23,19 @@ class _SavedDataPageState extends State<SavedDataPage> {
   void initState() {
     super.initState();
     _loadContent();
-    newSavedDataNotifier.addListener(() {
-      imageCache
-          .clear(); //This works but clears all loaded images. should be changed.
-      _loadContent(); //Refreshes loaded folders to update the listtiles that are displayed.
-    });
+    newSavedDataNotifier.addListener(_onNewSavedData);
+  }
+
+  @override
+  void dispose() {
+    newSavedDataNotifier.removeListener(_onNewSavedData);
+    super.dispose();
+  }
+
+  void _onNewSavedData() {
+    imageCache
+        .clear(); //This works but clears all loaded images. should be changed.
+    _loadContent();
   }
 
   Future<void> _loadContent() async {
