@@ -225,6 +225,10 @@ class _HomePageState extends State<HomePage> {
                                 await _saveImage(image, prediction);
                                 newSavedDataNotifier.value =
                                     !newSavedDataNotifier.value;
+                                if (!mounted) {
+                                  return;
+                                }
+
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     duration: Duration(seconds: 3),

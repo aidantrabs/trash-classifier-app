@@ -49,6 +49,10 @@ class _CameraPageState extends State<CameraPage> {
 
     if (pickedImage != null) {
       imageCapturedNotifier.value = pickedImage;
+      if (!mounted) {
+        return;
+      }
+
       setState(() {});
       Navigator.pop(context);
     }

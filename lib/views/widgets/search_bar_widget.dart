@@ -24,10 +24,11 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () async {
-        if (!mounted) {
+        await _loadContent();
+        if (!mounted) { 
           return;
         }
-        await _loadContent();
+
         showSearch(
           context: context,
           delegate: CustomSearchDelegate(loadedFolders: loadedFolders),
