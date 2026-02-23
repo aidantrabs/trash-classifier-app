@@ -14,7 +14,6 @@ class SearchBarWidget extends StatefulWidget {
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
   List<Directory> loadedFolders = [];
-  List<String> folderNames = [];
 
   Future<void> _loadContent() async {
     loadedFolders = await loadFolders();
