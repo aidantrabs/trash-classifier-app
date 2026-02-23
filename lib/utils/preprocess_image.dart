@@ -27,7 +27,7 @@ Future<List<List<List<List<double>>>>> preProcessImage(File imagePath) async {
     for (int x = 0; x < imageSize; x++) {
       img.Pixel pixel = resizedImage.getPixel(x, y);
 
-      // Normalize RGB values from 0-255 to 0-1
+      // Raw RGB values (0-255) — model has a built-in Rescaling(1./255) layer
       double r = pixel.r.toDouble();
       double g = pixel.g.toDouble();
       double b = pixel.b.toDouble();
