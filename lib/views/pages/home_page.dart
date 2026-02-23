@@ -62,18 +62,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _saveImage(XFile image, String? prediction) async {
-    final Directory appDirectory = await getAppDirectory(); //Gets app directory
+    final Directory appDirectory = await getAppDirectory();
 
     final String appDirectoryPath = appDirectory.path;
-    log(appDirectoryPath);
+    final String sanitizedName = _nameController.text.trim();
 
-    final File convertedImage = File(image.path); //sets image path to variable
+    final File convertedImage = File(image.path);
 
-    final String fileName =
-        "${_nameController.text}.jpg"; // adds.jpg to user specified filename
+    final String fileName = "$sanitizedName.jpg";
 
     final String filePath =
-        "$appDirectoryPath/user_saved_data/${_nameController.text}";
+        "$appDirectoryPath/user_saved_data/$sanitizedName";
 
     if (!await Directory(filePath).exists()) {
       await Directory(filePath).create(recursive: true);
@@ -161,8 +160,16 @@ class _HomePageState extends State<HomePage> {
                         ),
                         title: TextFormField(
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value == null || value.trim().isEmpty) {
                               return "Name cannot be empty";
+                            }
+                            if (value.contains('/') ||
+                                value.contains('\\') ||
+                                value.contains('..')) {
+                              return "Name contains invalid characters";
+                            }
+                            if (value.trim().length > 100) {
+                              return "Name is too long";
                             }
                             return null;
                           },
