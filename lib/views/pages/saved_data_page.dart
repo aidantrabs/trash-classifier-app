@@ -44,7 +44,7 @@ class _SavedDataPageState extends State<SavedDataPage> {
   }
 
   Future<void> _deleteFolder(Directory folder) async {
-    deleteSelectedFolder(folder);
+    await deleteSelectedFolder(folder);
     setState(() {
       loadedFolders.remove(folder);
     });
