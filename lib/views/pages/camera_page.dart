@@ -22,6 +22,7 @@ class _CameraPageState extends State<CameraPage> {
 
   bool _isCameraReady = false;
   bool _isBackCamera = true;
+  String? _cameraError;
   int _flashSetting = 0;
 
   final List<IconData> _flashIcons = [
@@ -83,16 +84,20 @@ class _CameraPageState extends State<CameraPage> {
           });
         })
         .catchError((Object e) {
-          if (e is CameraException) {
-            switch (e.code) {
-              case 'CameraAccessDenied':
-                // Handle access errors here.
-                break;
-              default:
-                // Handle other errors here.
-                break;
-            }
+          if (!mounted) {
+            return;
           }
+
+          if (e is CameraException && e.code == 'CameraAccessDenied') {
+            setState(() {
+              _cameraError = "Camera access denied. Please enable camera permissions in Settings.";
+            });
+          } else {
+            setState(() {
+              _cameraError = "Failed to initialize camera.";
+            });
+          }
+          log("Camera init error: $e");
         });
   }
 
@@ -126,16 +131,20 @@ class _CameraPageState extends State<CameraPage> {
           });
         })
         .catchError((Object e) {
-          if (e is CameraException) {
-            switch (e.code) {
-              case 'CameraAccessDenied':
-                // Handle access errors here.
-                break;
-              default:
-                // Handle other errors here.
-                break;
-            }
+          if (!mounted) {
+            return;
           }
+
+          if (e is CameraException && e.code == 'CameraAccessDenied') {
+            setState(() {
+              _cameraError = "Camera access denied. Please enable camera permissions in Settings.";
+            });
+          } else {
+            setState(() {
+              _cameraError = "Failed to initialize camera.";
+            });
+          }
+          log("Camera flip error: $e");
         });
   }
 
@@ -241,7 +250,18 @@ class _CameraPageState extends State<CameraPage> {
                 ],
               ),
             )
-          : const Center(child: CircularProgressIndicator()),
+          : Center(
+              child: _cameraError != null
+                  ? Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Text(
+                        _cameraError!,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : const CircularProgressIndicator(),
+            ),
     );
   }
 }
