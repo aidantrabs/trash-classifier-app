@@ -48,8 +48,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    super.dispose();
+    imageCapturedNotifier.removeListener(_onImageCaptured);
     _nameController.dispose();
+    super.dispose();
   }
 
   void _deleteImage() {
