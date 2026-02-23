@@ -36,28 +36,33 @@ class ClassifierModel {
     }
   }
 
-  Future<String> runModel(String imagePath) async {
-    File image = File(imagePath);
-    List output = List.filled(1 * 6, 0.0).reshape([1, 6]);
-    var input = await preProcessImage(image);
+  Future<String?> runModel(String imagePath) async {
+    try {
+      File image = File(imagePath);
+      List output = List.filled(1 * 6, 0.0).reshape([1, 6]);
+      var input = await preProcessImage(image);
 
-    log("Running Model");
-    _interpreter.run(input, output);
+      log("Running Model");
+      _interpreter.run(input, output);
 
-    int maxIndex = 0;
-    for (int i = 1; i < output[0].length; i++) {
-      if (output[0][maxIndex] < output[0][i]) {
-        maxIndex = i;
+      int maxIndex = 0;
+      for (int i = 1; i < output[0].length; i++) {
+        if (output[0][maxIndex] < output[0][i]) {
+          maxIndex = i;
+        }
       }
+
+      log("Model output: ${output[0]}");
+      log("Model Prediction: ${_labels[maxIndex]}");
+
+      final List<double> resultList = List<double>.from(output[0]);
+      double maxVal = resultList.reduce((a, b) => a > b ? a : b);
+      log("Model Confidence: ${(maxVal * 100).toStringAsFixed(2)}%");
+
+      return _labels[maxIndex];
+    } catch (e) {
+      log("Error running model: $e");
+      return null;
     }
-
-    log("Model output: ${output[0]}");
-    log("Model Prediction: ${_labels[maxIndex]}");
-
-    final List<double> resultList = List<double>.from(output[0]);
-    double maxVal = resultList.reduce((a, b) => a > b ? a : b);
-    log("Model Confidence: ${(maxVal * 100).toStringAsFixed(2)}%");
-
-    return _labels[maxIndex];
   }
 }
