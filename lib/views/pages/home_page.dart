@@ -22,20 +22,28 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late ClassifierModel model;
   String? prediction;
+  bool _modelReady = false;
 
   @override
   void initState() {
     super.initState();
     model = ClassifierModel();
-    model.loadModel();
+    _initModel();
 
-    imageCapturedNotifier.addListener(() async {
-      final image = imageCapturedNotifier.value;
-      if (image != null) {
-        prediction = await model.runModel(image.path);
-        setState(() {});
-      }
-    });
+    imageCapturedNotifier.addListener(_onImageCaptured);
+  }
+
+  Future<void> _initModel() async {
+    await model.loadModel();
+    _modelReady = true;
+  }
+
+  Future<void> _onImageCaptured() async {
+    final image = imageCapturedNotifier.value;
+    if (image != null && _modelReady) {
+      prediction = await model.runModel(image.path);
+      setState(() {});
+    }
   }
 
   @override
