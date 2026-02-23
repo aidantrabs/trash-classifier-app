@@ -8,9 +8,6 @@ import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
 import 'package:trash_classifier_app/utils/app_directory.dart';
 
-TextEditingController _nameController = TextEditingController();
-final _formKey = GlobalKey<FormState>();
-
 class HomePage extends StatefulWidget {
   ///Builds the HomePage when called
   const HomePage({super.key});
@@ -20,6 +17,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _nameController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late ClassifierModel model;
   String? prediction;
   bool _modelReady = false;
