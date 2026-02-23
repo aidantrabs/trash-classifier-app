@@ -31,10 +31,6 @@ class ClassifierModel {
         options: InterpreterOptions()..threads = 4,
       );
       _interpreter.allocateTensors();
-      print(_interpreter.getInputTensor(0).shape);
-      print(_interpreter.getInputTensor(0).type);
-      print(_interpreter.getOutputTensor(0).shape);
-      print(_interpreter.getOutputTensor(0).type);
     } catch (e) {
       log("Error while Creating Interpreter: $e");
     }
@@ -47,9 +43,6 @@ class ClassifierModel {
 
     log("Running Model");
     _interpreter.run(input, output);
-    print(input);
-    print("\n");
-    print(output);
 
     int maxIndex = 0;
     for (int i = 1; i < output[0].length; i++) {
