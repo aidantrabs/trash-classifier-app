@@ -37,11 +37,21 @@ Future<List<SavedItem>> loadFolders() async {
 }
 
 Future<void> deleteSelectedFolder(SavedItem item) async {
-  /// Deletes a saved item from the application document directory
   try {
     await item.delete();
     log('Deleted Item: ${item.name}');
   } on Exception catch (e) {
     log('Error deleting folder: $e');
+  }
+}
+
+Future<void> clearAllSavedData() async {
+  final appDirectory = await getAppDirectory();
+  final userSavedDataDir =
+      Directory('${appDirectory.path}/user_saved_data');
+  if (await userSavedDataDir.exists()) {
+    await userSavedDataDir.delete(recursive: true);
+    await userSavedDataDir.create();
+    log('All saved data cleared');
   }
 }
