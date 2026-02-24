@@ -20,30 +20,27 @@ class ClassifierModel {
 
   bool get isLoaded => _isLoaded;
 
-  static const String modelPath = "assets/trash-classifier-model-v0_2.tflite";
+  static const String modelPath = 'assets/trash-classifier-model-v0_2.tflite';
   static const double confidenceThreshold = 0.50;
 
   final List<String> _labels = [
-    "Compost",
-    "Garbage",
-    "Glass",
-    "Hazardous Waste",
-    "Recycling (Paper)",
-    "Recycling (Plastic)",
+    'Compost',
+    'Garbage',
+    'Glass',
+    'Hazardous Waste',
+    'Recycling (Paper)',
+    'Recycling (Plastic)',
   ];
 
   Future<bool> loadModel() async {
     if (_isLoaded) return true;
     try {
-      _interpreter = await Interpreter.fromAsset(
-        modelPath,
-        options: InterpreterOptions()..threads = 4,
-      );
+      _interpreter = await Interpreter.fromAsset(modelPath, options: InterpreterOptions()..threads = 4);
       _interpreter!.allocateTensors();
       _isLoaded = true;
       return true;
-    } catch (e) {
-      log("Error while Creating Interpreter: $e");
+    } on Exception catch (e) {
+      log('Error while Creating Interpreter: $e');
       return false;
     }
   }
@@ -57,34 +54,31 @@ class ClassifierModel {
   Future<ClassificationResult?> runModel(String imagePath) async {
     if (!_isLoaded || _interpreter == null) return null;
     try {
-      File image = File(imagePath);
-      List output = List.filled(1 * 6, 0.0).reshape([1, 6]);
-      var input = await preProcessImage(image);
+      final image = File(imagePath);
+      final output = List<List<double>>.generate(1, (_) => List<double>.filled(6, 0));
+      final input = await preProcessImage(image);
 
-      log("Running Model");
+      log('Running Model');
       _interpreter!.run(input, output);
 
-      int maxIndex = 0;
-      for (int i = 1; i < output[0].length; i++) {
+      var maxIndex = 0;
+      for (var i = 1; i < output[0].length; i++) {
         if (output[0][maxIndex] < output[0][i]) {
           maxIndex = i;
         }
       }
 
-      final List<double> resultList = List<double>.from(output[0]);
-      double maxVal = resultList.reduce((a, b) => a > b ? a : b);
+      final maxVal = output[0].reduce((a, b) => a > b ? a : b);
 
-      log("Model output: ${output[0]}");
-      log("Model Prediction: ${_labels[maxIndex]}");
-      log("Model Confidence: ${(maxVal * 100).toStringAsFixed(2)}%");
+      log('Model output: ${output[0]}');
+      log('Model Prediction: ${_labels[maxIndex]}');
+      log('Model Confidence: ${(maxVal * 100).toStringAsFixed(2)}%');
 
-      final String label = maxVal >= confidenceThreshold
-          ? _labels[maxIndex]
-          : "Unknown";
+      final label = maxVal >= confidenceThreshold ? _labels[maxIndex] : 'Unknown';
 
       return ClassificationResult(label: label, confidence: maxVal);
-    } catch (e) {
-      log("Error running model: $e");
+    } on Exception catch (e) {
+      log('Error running model: $e');
       return null;
     }
   }

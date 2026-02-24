@@ -18,12 +18,11 @@ class _MyAppState extends State<MyApp> {
     initThemeMode();
   }
 
-  void initThemeMode() async {
+  Future<void> initThemeMode() async {
     /// Gets Darkmode information for Material App
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final bool? themeMode = prefs.getBool(KConstant.darkModeKey);
-    darkModeNotifier.value =
-        themeMode ?? false; //! ?? Sets default value if none is there
+    final prefs = await SharedPreferences.getInstance();
+    final themeMode = prefs.getBool(KConstant.darkModeKey);
+    darkModeNotifier.value = themeMode ?? false; //! ?? Sets default value if none is there
   }
 
   @override
@@ -36,11 +35,11 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
-              seedColor: Color.fromARGB(255, 177, 255, 194),
+              seedColor: const Color.fromARGB(255, 177, 255, 194),
               brightness: isDarkMode ? Brightness.dark : Brightness.light,
             ),
           ),
-          home: MainPage(),
+          home: const MainPage(),
         );
       },
     );

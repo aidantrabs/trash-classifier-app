@@ -31,8 +31,7 @@ class _SavedDataPageState extends State<SavedDataPage> {
   }
 
   void _onNewSavedData() {
-    imageCache
-        .clear(); //This works but clears all loaded images. should be changed.
+    imageCache.clear(); //This works but clears all loaded images. should be changed.
     _loadContent();
   }
 
@@ -52,44 +51,37 @@ class _SavedDataPageState extends State<SavedDataPage> {
   Widget build(BuildContext context) {
     if (loadedFolders.isNotEmpty) {
       return ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         itemCount: loadedFolders.length,
         itemBuilder: (context, index) {
-          final SavedItem item = loadedFolders[index];
+          final item = loadedFolders[index];
           return Column(
             children: [
               Slidable(
-                closeOnScroll: true,
                 endActionPane: ActionPane(
-                  motion: StretchMotion(),
+                  motion: const StretchMotion(),
                   children: [
                     SlidableAction(
                       backgroundColor: Colors.red,
-                      onPressed: ((context) {
+                      onPressed: (context) {
                         _deleteFolder(item);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: Duration(seconds: 3),
-                            content: Text("Item Delete Successfully"),
-                          ),
+                          const SnackBar(duration: Duration(seconds: 3), content: Text('Item Delete Successfully')),
                         );
-                      }),
+                      },
                       icon: Icons.delete,
                     ),
                   ],
                 ),
                 child: ListTile(
                   dense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 8.0,
-                    horizontal: 8.0,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
 
                   title: Text(item.name, style: KTextStyle.labelStyle),
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
+                      MaterialPageRoute<void>(
                         builder: (context) {
                           return SelectedItemPage(item: item);
                         },
@@ -98,21 +90,13 @@ class _SavedDataPageState extends State<SavedDataPage> {
                   },
                 ),
               ),
-              Divider(
-                height: 1,
-                thickness: 1.5,
-                indent: 8,
-                endIndent: 8,
-                color: Colors.grey,
-              ),
+              const Divider(height: 1, thickness: 1.5, indent: 8, endIndent: 8, color: Colors.grey),
             ],
           );
         },
       );
     } else {
-      return Center(
-        child: Text("No Saved Data", style: KTextStyle.descriptionStyle),
-      );
+      return const Center(child: Text('No Saved Data', style: KTextStyle.descriptionStyle));
     }
   }
 }

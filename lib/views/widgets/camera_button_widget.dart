@@ -11,9 +11,9 @@ class CamerabuttonWidget extends StatelessWidget {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
+          MaterialPageRoute<void>(
             builder: (context) {
-              return CameraPage();
+              return const CameraPage();
             },
           ),
         );

@@ -25,26 +25,22 @@ class _MainPageState extends State<MainPage> {
       builder: (context, selectedPage, child) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("Trash Classifier"),
+            title: const Text('Trash Classifier'),
             actions: [
-              selectedPage == 0
-                  ? IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SettingsPage(),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.settings),
-                    )
-                  : SearchBarWidget(),
+              if (selectedPage == 0)
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const SettingsPage()));
+                  },
+                  icon: const Icon(Icons.settings),
+                )
+              else
+                const SearchBarWidget(),
             ],
           ),
           body: IndexedStack(index: selectedPage, children: _pages),
-          floatingActionButton: selectedPage == 0 ? CamerabuttonWidget() : null,
-          bottomNavigationBar: NavbarWidget(),
+          floatingActionButton: selectedPage == 0 ? const CamerabuttonWidget() : null,
+          bottomNavigationBar: const NavbarWidget(),
         );
       },
     );

@@ -25,11 +25,7 @@ class _CameraPageState extends State<CameraPage> {
   String? _cameraError;
   int _flashSetting = 0;
 
-  final List<IconData> _flashIcons = [
-    Icons.flash_off,
-    Icons.flash_on,
-    Icons.flash_auto,
-  ];
+  final List<IconData> _flashIcons = [Icons.flash_off, Icons.flash_on, Icons.flash_auto];
 
   @override
   void initState() {
@@ -44,9 +40,8 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> pickImage() async {
-    final XFile? pickedImage = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    final navigator = Navigator.of(context);
+    final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedImage != null) {
       imageCapturedNotifier.value = pickedImage;
@@ -55,7 +50,7 @@ class _CameraPageState extends State<CameraPage> {
       }
 
       setState(() {});
-      Navigator.pop(context);
+      navigator.pop();
     }
   }
 
@@ -75,33 +70,24 @@ class _CameraPageState extends State<CameraPage> {
     );
 
     _controller = CameraController(_backCamera, ResolutionPreset.max);
-    _controller
-        .initialize()
-        .then((_) {
-          if (!mounted) return;
-          setState(() {
-            _isCameraReady = true;
-          });
-        })
-        .catchError((Object e) {
-          if (!mounted) {
-            return;
-          }
-
-          if (e is CameraException && e.code == 'CameraAccessDenied') {
-            setState(() {
-              _cameraError = "Camera access denied. Please enable camera permissions in Settings.";
-            });
-          } else {
-            setState(() {
-              _cameraError = "Failed to initialize camera.";
-            });
-          }
-          log("Camera init error: $e");
-        });
+    try {
+      await _controller.initialize();
+      if (!mounted) return;
+      setState(() {
+        _isCameraReady = true;
+      });
+    } on CameraException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _cameraError = e.code == 'CameraAccessDenied'
+            ? 'Camera access denied. Please enable camera permissions in Settings.'
+            : 'Failed to initialize camera.';
+      });
+      log('Camera init error: $e');
+    }
   }
 
-  void flipCamera() async {
+  Future<void> flipCamera() async {
     // Update the isCameraReady Variable to false and dispose of the controller
     // Then we check if the user was using the back or front camera and set the controller to the opposite camera
     // Then update the variable
@@ -122,43 +108,34 @@ class _CameraPageState extends State<CameraPage> {
 
     _isBackCamera = !_isBackCamera;
 
-    _controller
-        .initialize()
-        .then((_) {
-          if (!mounted) return;
-          setState(() {
-            _isCameraReady = true;
-          });
-        })
-        .catchError((Object e) {
-          if (!mounted) {
-            return;
-          }
-
-          if (e is CameraException && e.code == 'CameraAccessDenied') {
-            setState(() {
-              _cameraError = "Camera access denied. Please enable camera permissions in Settings.";
-            });
-          } else {
-            setState(() {
-              _cameraError = "Failed to initialize camera.";
-            });
-          }
-          log("Camera flip error: $e");
-        });
+    try {
+      await _controller.initialize();
+      if (!mounted) return;
+      setState(() {
+        _isCameraReady = true;
+      });
+    } on CameraException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _cameraError = e.code == 'CameraAccessDenied'
+            ? 'Camera access denied. Please enable camera permissions in Settings.'
+            : 'Failed to initialize camera.';
+      });
+      log('Camera flip error: $e');
+    }
   }
 
   void _changeFlash() {
     // Update the flash setting variable when called and log the information
     _flashSetting = (_flashSetting + 1) % 3;
     if (_flashSetting == 0) {
-      log("Flash Mode: Off");
+      log('Flash Mode: Off');
       _controller.setFlashMode(FlashMode.off);
     } else if (_flashSetting == 1) {
-      log("Flash Mode: On");
+      log('Flash Mode: On');
       _controller.setFlashMode(FlashMode.always);
     } else {
-      log("Flash Mode: Auto");
+      log('Flash Mode: Auto');
       _controller.setFlashMode(FlashMode.auto);
     }
   }
@@ -172,17 +149,15 @@ class _CameraPageState extends State<CameraPage> {
         leading: BackButton(
           color: Colors.white,
           onPressed: () {
-            log("Camera Page Close");
+            log('Camera Page Close');
             Navigator.pop(context);
           },
         ),
         actions: [
           IconButton(
             onPressed: () {
-              log("Flash Button Pressed");
-              setState(() {
-                _changeFlash();
-              });
+              log('Flash Button Pressed');
+              setState(_changeFlash);
             },
             icon: Icon(_flashIcons[_flashSetting], color: Colors.white),
           ),
@@ -191,9 +166,9 @@ class _CameraPageState extends State<CameraPage> {
             onPressed: () {
               flipCamera();
               setState(() {});
-              log("Camera Flip Pressed");
+              log('Camera Flip Pressed');
             },
-            icon: Icon(Icons.flip_camera_ios_outlined, color: Colors.white),
+            icon: const Icon(Icons.flip_camera_ios_outlined, color: Colors.white),
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -207,20 +182,14 @@ class _CameraPageState extends State<CameraPage> {
                 children: [
                   CameraPreview(_controller),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
+                    padding: const EdgeInsets.only(bottom: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Expanded(
                           child: IconButton(
-                            onPressed: () async {
-                              pickImage();
-                            },
-                            icon: Icon(
-                              Icons.photo_outlined,
-                              size: 40,
-                              color: Colors.white,
-                            ),
+                            onPressed: pickImage,
+                            icon: const Icon(Icons.photo_outlined, size: 40, color: Colors.white),
                           ),
                         ),
                         Expanded(
@@ -228,22 +197,19 @@ class _CameraPageState extends State<CameraPage> {
                             alignment: Alignment.bottomCenter,
                             child: GestureDetector(
                               onTap: () async {
-                                XFile image = await _controller.takePicture();
+                                final navigator = Navigator.of(context);
+                                final image = await _controller.takePicture();
                                 if (!mounted) return;
-                                log("Capture Button Pressed");
+                                log('Capture Button Pressed');
                                 log('Picture saved at: ${image.path}');
                                 imageCapturedNotifier.value = image;
-                                Navigator.pop(context);
+                                navigator.pop();
                               },
-                              child: Icon(
-                                Icons.circle_outlined,
-                                size: 100.0,
-                                color: Colors.white,
-                              ),
+                              child: const Icon(Icons.circle_outlined, size: 100, color: Colors.white),
                             ),
                           ),
                         ),
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                       ],
                     ),
                   ),
@@ -253,7 +219,7 @@ class _CameraPageState extends State<CameraPage> {
           : Center(
               child: _cameraError != null
                   ? Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(24),
                       child: Text(
                         _cameraError!,
                         style: const TextStyle(color: Colors.white, fontSize: 16),

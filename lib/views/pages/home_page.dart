@@ -64,9 +64,9 @@ class _HomePageState extends State<HomePage> {
   void _deleteImage() {
     if (imageCapturedNotifier.value != null) {
       imageCapturedNotifier.value = null;
-      _nameController.text = "";
+      _nameController.text = '';
       prediction = null;
-      log("Image Deleted");
+      log('Image Deleted');
     }
   }
 
@@ -74,19 +74,11 @@ class _HomePageState extends State<HomePage> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Overwrite Existing Item?"),
-        content: Text(
-          "\"$name\" already exists. Do you want to replace it?",
-        ),
+        title: const Text('Overwrite Existing Item?'),
+        content: Text('"$name" already exists. Do you want to replace it?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text("Replace"),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Replace')),
         ],
       ),
     );
@@ -94,17 +86,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<bool> _saveImage(XFile image, ClassificationResult? prediction) async {
-    final Directory appDirectory = await getAppDirectory();
+    final appDirectory = await getAppDirectory();
 
-    final String appDirectoryPath = appDirectory.path;
-    final String sanitizedName = _nameController.text.trim();
+    final appDirectoryPath = appDirectory.path;
+    final sanitizedName = _nameController.text.trim();
 
-    final File convertedImage = File(image.path);
+    final convertedImage = File(image.path);
 
-    final String fileName = "$sanitizedName.jpg";
+    final fileName = '$sanitizedName.jpg';
 
-    final String filePath =
-        "$appDirectoryPath/user_saved_data/$sanitizedName";
+    final filePath = '$appDirectoryPath/user_saved_data/$sanitizedName';
 
     if (await Directory(filePath).exists()) {
       if (!mounted) {
@@ -112,7 +103,7 @@ class _HomePageState extends State<HomePage> {
       }
 
       final overwrite = await _confirmOverwrite(sanitizedName);
-      
+
       if (!overwrite) {
         return false;
       }
@@ -120,20 +111,18 @@ class _HomePageState extends State<HomePage> {
       await Directory(filePath).create(recursive: true);
     }
 
-    await convertedImage.copy(
-      "$filePath/$fileName",
-    ); // copys the selected image to application directory
+    await convertedImage.copy('$filePath/$fileName'); // copys the selected image to application directory
 
-    log("Image Saved as: ${_nameController.text} to $filePath/$fileName");
+    log('Image Saved as: ${_nameController.text} to $filePath/$fileName');
 
-    final File classificationFile = File("$filePath/classification.txt");
+    final classificationFile = File('$filePath/classification.txt');
 
     if (prediction != null) {
       try {
-        final content = "${prediction.label} (${prediction.confidencePercent})";
+        final content = '${prediction.label} (${prediction.confidencePercent})';
         await classificationFile.writeAsString(content);
-        log("Prediction: $content Saved to $filePath/classification.txt");
-      } catch (e) {
+        log('Prediction: $content Saved to $filePath/classification.txt');
+      } on Exception catch (e) {
         log('Error saving file: $e');
       }
     }
@@ -154,76 +143,57 @@ class _HomePageState extends State<HomePage> {
       valueListenable: imageCapturedNotifier,
       builder: (context, image, child) {
         if (image == null) {
-          return Center(
-            child: Text("No Image Found!", style: KTextStyle.descriptionStyle),
-          );
+          return const Center(child: Text('No Image Found!', style: KTextStyle.descriptionStyle));
         } else {
           return SingleChildScrollView(
             child: Form(
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 500,
-                    width: double.infinity,
-                    child: Image.file(File(image.path)),
-                  ),
+                  SizedBox(height: 500, width: double.infinity, child: Image.file(File(image.path))),
 
                   Container(
-                    padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
                     width: double.infinity,
                     child: Card(
                       child: ListTile(
-                        leading: Text(
-                          "Type: ",
-                          style: KTextStyle.descriptionStyle,
-                        ),
+                        leading: const Text('Type: ', style: KTextStyle.descriptionStyle),
 
                         title: _modelLoadFailed
-                            ? Text("Model failed to load")
+                            ? const Text('Model failed to load')
                             : prediction == null
-                                ? Align(
-                                    alignment: Alignment.center,
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 25,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2.5,
-                                      ),
-                                    ),
-                                  )
-                                : Text(
-                                    "${prediction!.label} — ${prediction!.confidencePercent}",
-                                  ),
+                            ? const Align(
+                                child: SizedBox(
+                                  height: 25,
+                                  width: 25,
+                                  child: CircularProgressIndicator(strokeWidth: 2.5),
+                                ),
+                              )
+                            : Text('${prediction!.label} — ${prediction!.confidencePercent}'),
                       ),
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                     width: double.infinity,
                     child: Card(
                       child: ListTile(
-                        leading: Text(
-                          "Name:",
-                          style: KTextStyle.descriptionStyle,
-                        ),
+                        leading: const Text('Name:', style: KTextStyle.descriptionStyle),
                         title: TextFormField(
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return "Name cannot be empty";
+                              return 'Name cannot be empty';
                             }
-                            if (value.contains('/') ||
-                                value.contains('\\') ||
-                                value.contains('..')) {
-                              return "Name contains invalid characters";
+                            if (value.contains('/') || value.contains(r'\') || value.contains('..')) {
+                              return 'Name contains invalid characters';
                             }
                             if (value.trim().length > 100) {
-                              return "Name is too long";
+                              return 'Name is too long';
                             }
                             return null;
                           },
-                          decoration: InputDecoration(
-                            labelText: "Enter Object Name",
+                          decoration: const InputDecoration(
+                            labelText: 'Enter Object Name',
                             contentPadding: EdgeInsets.all(8),
                             border: OutlineInputBorder(),
                             isDense: true,
@@ -237,57 +207,55 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsetsGeometry.only(top: 8.0),
+                    padding: const EdgeInsetsGeometry.only(top: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Material(
-                          shape: CircleBorder(),
+                          shape: const CircleBorder(),
                           color: Colors.red,
                           elevation: 4,
 
                           child: IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: const Icon(Icons.delete),
                             color: Colors.white,
                             onPressed: () {
                               _deleteImage();
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   duration: Duration(seconds: 3),
-                                  content: Text("Image Deleted Successfully"),
+                                  content: Text('Image Deleted Successfully'),
                                 ),
                               );
                             },
-                            tooltip: "Delete",
+                            tooltip: 'Delete',
                           ),
                         ),
                         Material(
-                          shape: CircleBorder(),
+                          shape: const CircleBorder(),
                           color: Colors.blue,
                           elevation: 4,
                           child: IconButton(
-                            icon: Icon(Icons.save),
+                            icon: const Icon(Icons.save),
                             color: Colors.white,
-                            tooltip: "Save",
+                            tooltip: 'Save',
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
+                                final messenger = ScaffoldMessenger.of(context);
                                 final saved = await _saveImage(image, prediction);
                                 if (!saved) {
                                   return;
                                 }
 
-                                newSavedDataNotifier.value =
-                                    !newSavedDataNotifier.value;
+                                newSavedDataNotifier.value = !newSavedDataNotifier.value;
                                 if (!mounted) {
                                   return;
                                 }
 
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                messenger.showSnackBar(
                                   SnackBar(
-                                    duration: Duration(seconds: 3),
-                                    content: Text(
-                                      "Image saved as: ${_nameController.text}",
-                                    ),
+                                    duration: const Duration(seconds: 3),
+                                    content: Text('Image saved as: ${_nameController.text}'),
                                   ),
                                 );
                                 _deleteImage();

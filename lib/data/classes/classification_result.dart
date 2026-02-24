@@ -1,11 +1,7 @@
 class ClassificationResult {
+  const ClassificationResult({required this.label, required this.confidence});
   final String label;
   final double confidence;
 
-  const ClassificationResult({
-    required this.label,
-    required this.confidence,
-  });
-
-  String get confidencePercent => "${(confidence * 100).toStringAsFixed(1)}%";
+  String get confidencePercent => '${(confidence * 100).toStringAsFixed(1)}%';
 }

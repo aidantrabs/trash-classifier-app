@@ -3,15 +3,14 @@ import 'dart:io';
 import 'package:path/path.dart';
 
 class SavedItem {
-  final Directory directory;
-
   SavedItem({required this.directory});
+  final Directory directory;
 
   String get name => basename(directory.path);
 
-  String get imagePath => "${directory.path}/$name.jpg";
+  String get imagePath => '${directory.path}/$name.jpg';
 
-  String get classificationPath => "${directory.path}/classification.txt";
+  String get classificationPath => '${directory.path}/classification.txt';
 
   File get imageFile => File(imagePath);
 
