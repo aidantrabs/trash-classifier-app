@@ -8,6 +8,7 @@ import 'package:trash_classifier_app/data/classes/classifier_model.dart';
 import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
 import 'package:trash_classifier_app/utils/app_directory.dart';
+import 'package:trash_classifier_app/utils/compress_image.dart';
 
 class HomePage extends StatefulWidget {
   ///Builds the HomePage when called
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage> {
     final appDirectoryPath = appDirectory.path;
     final sanitizedName = _nameController.text.trim();
 
-    final convertedImage = File(image.path);
+    final sourceImage = File(image.path);
 
     final fileName = '$sanitizedName.jpg';
 
@@ -111,7 +112,7 @@ class _HomePageState extends State<HomePage> {
       await Directory(filePath).create(recursive: true);
     }
 
-    await convertedImage.copy('$filePath/$fileName'); // copys the selected image to application directory
+    await compressAndSave(sourceImage, '$filePath/$fileName');
 
     log('Image Saved as: ${_nameController.text} to $filePath/$fileName');
 
