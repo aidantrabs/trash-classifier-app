@@ -29,7 +29,10 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         }
 
         // ignore: use_build_context_synchronously — mounted check above guards this
-        await showSearch(context: context, delegate: CustomSearchDelegate(loadedFolders: loadedFolders));
+        await showSearch(
+          context: context,
+          delegate: CustomSearchDelegate(loadedFolders: loadedFolders),
+        );
       },
       icon: const Icon(Icons.search),
     );

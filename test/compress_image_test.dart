@@ -21,7 +21,7 @@ void main() {
       }
 
       largeImageFile = File('${tempDir.path}/large.jpg');
-      await largeImageFile.writeAsBytes(img.encodeJpg(largeImage, quality: 100));
+      await largeImageFile.writeAsBytes(img.encodeJpg(largeImage));
     });
 
     tearDown(() async {
