@@ -35,7 +35,9 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initModel() async {
     final success = await model.loadModel();
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     _modelReady = success;
     _modelLoadFailed = !success;
     setState(() {});
@@ -68,7 +70,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _saveImage(XFile image, String? prediction) async {
+  Future<bool> _confirmOverwrite(String name) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Overwrite Existing Item?"),
+        content: Text(
+          "\"$name\" already exists. Do you want to replace it?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text("Replace"),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
+  Future<bool> _saveImage(XFile image, String? prediction) async {
     final Directory appDirectory = await getAppDirectory();
 
     final String appDirectoryPath = appDirectory.path;
@@ -81,7 +106,17 @@ class _HomePageState extends State<HomePage> {
     final String filePath =
         "$appDirectoryPath/user_saved_data/$sanitizedName";
 
-    if (!await Directory(filePath).exists()) {
+    if (await Directory(filePath).exists()) {
+      if (!mounted) {
+        return false;
+      }
+
+      final overwrite = await _confirmOverwrite(sanitizedName);
+      
+      if (!overwrite) {
+        return false;
+      }
+    } else {
       await Directory(filePath).create(recursive: true);
     }
 
@@ -101,6 +136,8 @@ class _HomePageState extends State<HomePage> {
         log('Error saving file: $e');
       }
     }
+
+    return true;
   }
 
   @override
@@ -231,7 +268,11 @@ class _HomePageState extends State<HomePage> {
                             tooltip: "Save",
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                await _saveImage(image, prediction);
+                                final saved = await _saveImage(image, prediction);
+                                if (!saved) {
+                                  return;
+                                }
+
                                 newSavedDataNotifier.value =
                                     !newSavedDataNotifier.value;
                                 if (!mounted) {
