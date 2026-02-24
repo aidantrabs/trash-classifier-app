@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
+import 'package:trash_classifier_app/theme/app_theme.dart';
 import 'package:trash_classifier_app/views/main_page.dart';
 
 class MyApp extends StatefulWidget {
@@ -19,26 +20,21 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initThemeMode() async {
-    /// Gets Darkmode information for Material App
     final prefs = await SharedPreferences.getInstance();
     final themeMode = prefs.getBool(KConstant.darkModeKey);
-    darkModeNotifier.value = themeMode ?? false; //! ?? Sets default value if none is there
+    darkModeNotifier.value = themeMode ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Holds the Material App and controls if the app is in darkmode
     return ValueListenableBuilder(
       valueListenable: darkModeNotifier,
       builder: (context, isDarkMode, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 177, 255, 194),
-              brightness: isDarkMode ? Brightness.dark : Brightness.light,
-            ),
-          ),
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
           home: const MainPage(),
         );
       },

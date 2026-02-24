@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:trash_classifier_app/data/classes/saved_item.dart';
-import 'package:trash_classifier_app/data/constants.dart';
+import 'package:trash_classifier_app/theme/app_spacing.dart';
+import 'package:trash_classifier_app/views/widgets/info_card.dart';
 
 class SelectedItemPage extends StatefulWidget {
   const SelectedItemPage({required this.item, super.key});
-  // Displays the item the user selected from the app directory
+
   final SavedItem item;
 
   @override
@@ -30,41 +31,46 @@ class _SelectedItemPageState extends State<SelectedItemPage> {
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(item.name),
-        leading: BackButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: _loaded
-          ? Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                  width: double.infinity,
-                  child: Card(
-                    child: ListTile(
-                      leading: const Text('Name: ', style: KTextStyle.descriptionStyle),
-                      title: Text(item.name),
+          ? SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                children: [
+                  // ── Image ────────────────────────────────────────
+                  ClipRRect(
+                    borderRadius: AppSpacing.borderRadiusLg,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Image.file(item.imageFile, fit: BoxFit.cover),
                     ),
                   ),
-                ),
-                SizedBox(height: 500, width: double.infinity, child: Image.file(item.imageFile)),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                  width: double.infinity,
-                  child: Card(
-                    child: ListTile(
-                      leading: const Text('Type: ', style: KTextStyle.descriptionStyle),
-                      title: prediction == null ? const Text('No Classification Data Found') : Text(prediction!),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  // ── Name ─────────────────────────────────────────
+                  InfoCard(
+                    label: 'Name',
+                    child: Text(item.name, style: theme.textTheme.bodyLarge),
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // ── Classification ───────────────────────────────
+                  InfoCard(
+                    label: 'Classification',
+                    child: Text(
+                      prediction ?? 'No classification data found',
+                      style: theme.textTheme.bodyLarge,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             )
           : const Center(child: CircularProgressIndicator()),
     );

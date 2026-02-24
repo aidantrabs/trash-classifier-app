@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:trash_classifier_app/data/classes/saved_item.dart';
-import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/views/pages/selected_item_page.dart';
 
 class CustomSearchDelegate extends SearchDelegate<void> {
@@ -50,7 +49,10 @@ class CustomSearchDelegate extends SearchDelegate<void> {
             ListTile(
               dense: true,
               contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              title: Text(item.name, style: KTextStyle.labelStyle),
+              title: Text(
+                item.name,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.push(
                   context,
