@@ -12,7 +12,13 @@ import 'package:trash_classifier_app/utils/preprocess_image.dart';
 //Output Type: float32
 
 class ClassifierModel {
-  late Interpreter _interpreter;
+  ClassifierModel._();
+  static final ClassifierModel instance = ClassifierModel._();
+
+  Interpreter? _interpreter;
+  bool _isLoaded = false;
+
+  bool get isLoaded => _isLoaded;
 
   static const String modelPath = "assets/trash-classifier-model-v0_2.tflite";
   static const double confidenceThreshold = 0.50;
@@ -27,12 +33,14 @@ class ClassifierModel {
   ];
 
   Future<bool> loadModel() async {
+    if (_isLoaded) return true;
     try {
       _interpreter = await Interpreter.fromAsset(
         modelPath,
         options: InterpreterOptions()..threads = 4,
       );
-      _interpreter.allocateTensors();
+      _interpreter!.allocateTensors();
+      _isLoaded = true;
       return true;
     } catch (e) {
       log("Error while Creating Interpreter: $e");
@@ -40,14 +48,21 @@ class ClassifierModel {
     }
   }
 
+  void close() {
+    _interpreter?.close();
+    _interpreter = null;
+    _isLoaded = false;
+  }
+
   Future<ClassificationResult?> runModel(String imagePath) async {
+    if (!_isLoaded || _interpreter == null) return null;
     try {
       File image = File(imagePath);
       List output = List.filled(1 * 6, 0.0).reshape([1, 6]);
       var input = await preProcessImage(image);
 
       log("Running Model");
-      _interpreter.run(input, output);
+      _interpreter!.run(input, output);
 
       int maxIndex = 0;
       for (int i = 1; i < output[0].length; i++) {

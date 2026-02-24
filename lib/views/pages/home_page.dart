@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _nameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late ClassifierModel model;
+  final ClassifierModel model = ClassifierModel.instance;
   ClassificationResult? prediction;
   bool _modelReady = false;
   bool _modelLoadFailed = false;
@@ -28,7 +28,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    model = ClassifierModel();
     _initModel();
 
     imageCapturedNotifier.addListener(_onImageCaptured);
