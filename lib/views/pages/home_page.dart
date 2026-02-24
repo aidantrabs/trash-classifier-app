@@ -9,6 +9,7 @@ import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
 import 'package:trash_classifier_app/utils/app_directory.dart';
 import 'package:trash_classifier_app/utils/compress_image.dart';
+import 'package:trash_classifier_app/utils/validators.dart';
 
 class HomePage extends StatefulWidget {
   ///Builds the HomePage when called
@@ -181,18 +182,7 @@ class _HomePageState extends State<HomePage> {
                       child: ListTile(
                         leading: const Text('Name:', style: KTextStyle.descriptionStyle),
                         title: TextFormField(
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Name cannot be empty';
-                            }
-                            if (value.contains('/') || value.contains(r'\') || value.contains('..')) {
-                              return 'Name contains invalid characters';
-                            }
-                            if (value.trim().length > 100) {
-                              return 'Name is too long';
-                            }
-                            return null;
-                          },
+                          validator: validateItemName,
                           decoration: const InputDecoration(
                             labelText: 'Enter Object Name',
                             contentPadding: EdgeInsets.all(8),
