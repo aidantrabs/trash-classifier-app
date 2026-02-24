@@ -1,13 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 
-Future<List<List<List<List<double>>>>> preProcessImage(File imagePath) async {
-  log("PreProcessing Image");
-
-  final int imageSize = 224;
-  final Uint8List imageBytes = await imagePath.readAsBytes();
+// top level function so it can run in an isolate
+// takes raw image bytes, returns tensor shaped [1, 224, 224, 3]
+List<List<List<List<double>>>> _processBytes(Uint8List imageBytes) {
+  const int imageSize = 224;
 
   img.Image? image = img.decodeImage(imageBytes);
   if (image == null) throw Exception("Could not decode image");
@@ -28,27 +28,18 @@ Future<List<List<List<List<double>>>>> preProcessImage(File imagePath) async {
       img.Pixel pixel = resizedImage.getPixel(x, y);
 
       // Raw RGB values (0-255) — model has a built-in Rescaling(1./255) layer
-      double r = pixel.r.toDouble();
-      double g = pixel.g.toDouble();
-      double b = pixel.b.toDouble();
-
-      imageAsFloatList[y][x][0] = r;
-      imageAsFloatList[y][x][1] = g;
-      imageAsFloatList[y][x][2] = b;
+      imageAsFloatList[y][x][0] = pixel.r.toDouble();
+      imageAsFloatList[y][x][1] = pixel.g.toDouble();
+      imageAsFloatList[y][x][2] = pixel.b.toDouble();
     }
   }
-  return [
-    imageAsFloatList,
-  ]; //Put imageAsFloatList in a 1D list because expected shape is [1, 224, 224, 3]
 
-  // 1: the number of images being sent at once.
-  // 224: The row of the image (matrix)
-  // 224: The column of the image (matrix)
-  // 3: color chanels each pixel
+  return [imageAsFloatList]; // shape: [1, 224, 224, 3]
+}
 
-  //When we specify an index such as [10, 180, 1], we are on the 11th row, 181st column, and looking at the green colour channel
+Future<List<List<List<List<double>>>>> preProcessImage(File imagePath) async {
+  log("PreProcessing Image");
 
-  // the bottom most portion of the list (3) will be the colour values of the pixel where each number specifies the either the red green or blue values for that pixel.
-  // The second bottom most portion of the list (224) is the column (width of the image) we are looking at. For each column there is 224 pixels so well have 224 items of size 3.
-  // the highest portion of the list is the row (height of the image). For each column we will have 1 row of 224 pixels.
+  final Uint8List imageBytes = await imagePath.readAsBytes();
+  return Isolate.run(() => _processBytes(imageBytes));
 }
