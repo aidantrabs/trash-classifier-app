@@ -35,15 +35,14 @@ class CustomSearchDelegate extends SearchDelegate {
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
+  Widget _buildMatchList(BuildContext context) {
     List<Directory> matchQuery = [];
     for (var folder in loadedFolders) {
       if (basename(folder.path).toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(folder);
       }
     }
-    return (ListView.builder(
+    return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 8),
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
@@ -57,14 +56,13 @@ class CustomSearchDelegate extends SearchDelegate {
                 vertical: 8.0,
                 horizontal: 8.0,
               ),
-
               title: Text(folderName, style: KTextStyle.labelStyle),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return (SelectedItemPage(directory: folder));
+                      return SelectedItemPage(directory: folder);
                     },
                   ),
                 );
@@ -80,54 +78,12 @@ class CustomSearchDelegate extends SearchDelegate {
           ],
         );
       },
-    ));
+    );
   }
 
   @override
-  Widget buildSuggestions(BuildContext context) {
-    List<Directory> matchQuery = [];
-    for (var folder in loadedFolders) {
-      if (basename(folder.path).toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(folder);
-      }
-    }
-    return (ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        final Directory folder = matchQuery[index];
-        final String folderName = basename(folder.path);
-        return Column(
-          children: [
-            ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 8.0,
-              ),
+  Widget buildResults(BuildContext context) => _buildMatchList(context);
 
-              title: Text(folderName, style: KTextStyle.labelStyle),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return (SelectedItemPage(directory: folder));
-                    },
-                  ),
-                );
-              },
-            ),
-            Divider(
-              height: 1,
-              thickness: 1.5,
-              indent: 8,
-              endIndent: 8,
-              color: Colors.grey,
-            ),
-          ],
-        );
-      },
-    ));
-  }
+  @override
+  Widget buildSuggestions(BuildContext context) => _buildMatchList(context);
 }
