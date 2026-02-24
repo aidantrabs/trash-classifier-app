@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
+import 'package:trash_classifier_app/theme/app_spacing.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -25,7 +26,11 @@ class _CameraPageState extends State<CameraPage> {
   String? _cameraError;
   int _flashSetting = 0;
 
-  final List<IconData> _flashIcons = [Icons.flash_off, Icons.flash_on, Icons.flash_auto];
+  final List<IconData> _flashIcons = [
+    Icons.flash_off,
+    Icons.flash_on,
+    Icons.flash_auto,
+  ];
 
   @override
   void initState() {
@@ -45,28 +50,23 @@ class _CameraPageState extends State<CameraPage> {
 
     if (pickedImage != null) {
       imageCapturedNotifier.value = pickedImage;
-      if (!mounted) {
-        return;
-      }
-
+      if (!mounted) return;
       setState(() {});
       navigator.pop();
     }
   }
 
   Future<void> _initializeCameras() async {
-    // We get the list of available cameras, then back and front cameras by checking lens direction. If no camera is found for either we default to where the camera normally is.
-    // By default we use the back camera, then initialze the camera and update the isCameraReady Variable.
     _cameras = await availableCameras();
 
     _backCamera = _cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.back,
-      orElse: () => _cameras.first, // fallback if no back camera found
+      orElse: () => _cameras.first,
     );
 
     _frontCamera = _cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,
-      orElse: () => _cameras.last, // fallback if no front camera found
+      orElse: () => _cameras.last,
     );
 
     _controller = CameraController(_backCamera, ResolutionPreset.max);
@@ -80,7 +80,8 @@ class _CameraPageState extends State<CameraPage> {
       if (!mounted) return;
       setState(() {
         _cameraError = e.code == 'CameraAccessDenied'
-            ? 'Camera access denied. Please enable camera permissions in Settings.'
+            ? 'Camera access denied. Please enable camera '
+                'permissions in Settings.'
             : 'Failed to initialize camera.';
       });
       log('Camera init error: $e');
@@ -88,23 +89,14 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> flipCamera() async {
-    // Update the isCameraReady Variable to false and dispose of the controller
-    // Then we check if the user was using the back or front camera and set the controller to the opposite camera
-    // Then update the variable
     setState(() {
       _isCameraReady = false;
     });
     await _controller.dispose();
 
     _controller = _isBackCamera
-        ? CameraController(
-            _frontCamera,
-            ResolutionPreset.max,
-          ) //If on the back camera create a controller for the front camera
-        : CameraController(
-            _backCamera,
-            ResolutionPreset.max,
-          ); //If on the front camera create a controller for the back camera
+        ? CameraController(_frontCamera, ResolutionPreset.max)
+        : CameraController(_backCamera, ResolutionPreset.max);
 
     _isBackCamera = !_isBackCamera;
 
@@ -118,7 +110,8 @@ class _CameraPageState extends State<CameraPage> {
       if (!mounted) return;
       setState(() {
         _cameraError = e.code == 'CameraAccessDenied'
-            ? 'Camera access denied. Please enable camera permissions in Settings.'
+            ? 'Camera access denied. Please enable camera '
+                'permissions in Settings.'
             : 'Failed to initialize camera.';
       });
       log('Camera flip error: $e');
@@ -126,7 +119,6 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   void _changeFlash() {
-    // Update the flash setting variable when called and log the information
     _flashSetting = (_flashSetting + 1) % 3;
     if (_flashSetting == 0) {
       log('Flash Mode: Off');
@@ -142,7 +134,6 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   Widget build(BuildContext context) {
-    ///Builds the Camera Page when Called
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -161,73 +152,110 @@ class _CameraPageState extends State<CameraPage> {
             },
             icon: Icon(_flashIcons[_flashSetting], color: Colors.white),
           ),
-
           IconButton(
             onPressed: () {
               flipCamera();
               setState(() {});
               log('Camera Flip Pressed');
             },
-            icon: const Icon(Icons.flip_camera_ios_outlined, color: Colors.white),
+            icon: const Icon(
+              Icons.flip_camera_ios_outlined,
+              color: Colors.white,
+            ),
           ),
         ],
         backgroundColor: Colors.transparent,
       ),
+      body: _isCameraReady ? _buildCameraView() : _buildLoadingOrError(),
+    );
+  }
 
-      //If the camera is ready we will display the camera preview, otherwise we will display a loading icon.
-      body: _isCameraReady
-          ? SizedBox.expand(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  CameraPreview(_controller),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: IconButton(
-                            onPressed: pickImage,
-                            icon: const Icon(Icons.photo_outlined, size: 40, color: Colors.white),
-                          ),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: GestureDetector(
-                              onTap: () async {
-                                final navigator = Navigator.of(context);
-                                final image = await _controller.takePicture();
-                                if (!mounted) return;
-                                log('Capture Button Pressed');
-                                log('Picture saved at: ${image.path}');
-                                imageCapturedNotifier.value = image;
-                                navigator.pop();
-                              },
-                              child: const Icon(Icons.circle_outlined, size: 100, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        const Expanded(child: SizedBox()),
-                      ],
+  Widget _buildCameraView() {
+    return SizedBox.expand(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // ── Rounded camera preview ───────────────────────────
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: ClipRRect(
+                borderRadius: AppSpacing.borderRadiusLg,
+                child: CameraPreview(_controller),
+              ),
+            ),
+          ),
+
+          // ── Bottom controls ──────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Gallery picker
+                Expanded(
+                  child: IconButton(
+                    onPressed: pickImage,
+                    icon: const Icon(
+                      Icons.photo_outlined,
+                      size: 32,
+                      color: Colors.white,
                     ),
                   ),
-                ],
-              ),
-            )
-          : Center(
-              child: _cameraError != null
-                  ? Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        _cameraError!,
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
-                        textAlign: TextAlign.center,
+                ),
+
+                // Capture button (ring + inner circle)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final navigator = Navigator.of(context);
+                      final image = await _controller.takePicture();
+                      if (!mounted) return;
+                      log('Capture Button Pressed');
+                      log('Picture saved at: ${image.path}');
+                      imageCapturedNotifier.value = image;
+                      navigator.pop();
+                    },
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 4),
                       ),
-                    )
-                  : const CircularProgressIndicator(),
+                      padding: const EdgeInsets.all(4),
+                      child: const DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const Expanded(child: SizedBox()),
+              ],
             ),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildLoadingOrError() {
+    if (_cameraError != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Text(
+            _cameraError!,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    return const Center(child: CircularProgressIndicator());
   }
 }
