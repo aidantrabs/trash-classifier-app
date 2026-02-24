@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
 
-class NavbarWidget extends StatefulWidget {
+class NavbarWidget extends StatelessWidget {
   const NavbarWidget({super.key});
 
   @override
-  State<NavbarWidget> createState() => _NavbarWidgetState();
-}
-
-class _NavbarWidgetState extends State<NavbarWidget> {
-  @override
   Widget build(BuildContext context) {
-    /// Builds the Bottom Navigation bar when called
     return ValueListenableBuilder(
       valueListenable: selectedPageNotifier,
       builder: (context, selectedPage, child) {
         return NavigationBar(
-          //TODO: Update icon color based on dark/light mode
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.list), label: 'Saved Data'),
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.bookmark_outline),
+              selectedIcon: Icon(Icons.bookmark),
+              label: 'Saved',
+            ),
           ],
           selectedIndex: selectedPage,
           onDestinationSelected: (int value) {

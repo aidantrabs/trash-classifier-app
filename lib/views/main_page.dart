@@ -17,29 +17,36 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = const [HomePage(), SavedDataPage()];
 
+  static const _titles = ['Trash Classifier', 'Saved Items'];
+
   @override
   Widget build(BuildContext context) {
-    /// Builds the current displayed page using selected page notifier + Index stack
     return ValueListenableBuilder(
       valueListenable: selectedPageNotifier,
       builder: (context, selectedPage, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Trash Classifier'),
+            title: Text(_titles[selectedPage]),
             actions: [
               if (selectedPage == 0)
                 IconButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const SettingsPage()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
                   },
-                  icon: const Icon(Icons.settings),
+                  icon: const Icon(Icons.settings_outlined),
                 )
               else
                 const SearchBarWidget(),
             ],
           ),
           body: IndexedStack(index: selectedPage, children: _pages),
-          floatingActionButton: selectedPage == 0 ? const CamerabuttonWidget() : null,
+          floatingActionButton:
+              selectedPage == 0 ? const CamerabuttonWidget() : null,
           bottomNavigationBar: const NavbarWidget(),
         );
       },
