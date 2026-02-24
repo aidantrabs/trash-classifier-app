@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:trash_classifier_app/data/classes/classification_result.dart';
 import 'package:trash_classifier_app/utils/preprocess_image.dart';
 
 //Input Shape = [1, 224, 224, 3]
@@ -14,6 +15,7 @@ class ClassifierModel {
   late Interpreter _interpreter;
 
   static const String modelPath = "assets/trash-classifier-model-v0_2.tflite";
+  static const double confidenceThreshold = 0.50;
 
   final List<String> _labels = [
     "Compost",
@@ -38,7 +40,7 @@ class ClassifierModel {
     }
   }
 
-  Future<String?> runModel(String imagePath) async {
+  Future<ClassificationResult?> runModel(String imagePath) async {
     try {
       File image = File(imagePath);
       List output = List.filled(1 * 6, 0.0).reshape([1, 6]);
@@ -54,14 +56,18 @@ class ClassifierModel {
         }
       }
 
-      log("Model output: ${output[0]}");
-      log("Model Prediction: ${_labels[maxIndex]}");
-
       final List<double> resultList = List<double>.from(output[0]);
       double maxVal = resultList.reduce((a, b) => a > b ? a : b);
+
+      log("Model output: ${output[0]}");
+      log("Model Prediction: ${_labels[maxIndex]}");
       log("Model Confidence: ${(maxVal * 100).toStringAsFixed(2)}%");
 
-      return _labels[maxIndex];
+      final String label = maxVal >= confidenceThreshold
+          ? _labels[maxIndex]
+          : "Unknown";
+
+      return ClassificationResult(label: label, confidence: maxVal);
     } catch (e) {
       log("Error running model: $e");
       return null;

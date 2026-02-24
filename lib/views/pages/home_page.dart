@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:trash_classifier_app/data/classes/classification_result.dart';
 import 'package:trash_classifier_app/data/classes/classifier_model.dart';
 import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _nameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late ClassifierModel model;
-  String? prediction;
+  ClassificationResult? prediction;
   bool _modelReady = false;
   bool _modelLoadFailed = false;
 
@@ -93,7 +94,7 @@ class _HomePageState extends State<HomePage> {
     return result ?? false;
   }
 
-  Future<bool> _saveImage(XFile image, String? prediction) async {
+  Future<bool> _saveImage(XFile image, ClassificationResult? prediction) async {
     final Directory appDirectory = await getAppDirectory();
 
     final String appDirectoryPath = appDirectory.path;
@@ -130,8 +131,9 @@ class _HomePageState extends State<HomePage> {
 
     if (prediction != null) {
       try {
-        await classificationFile.writeAsString(prediction);
-        log("Prediction: $prediction Saved to $filePath/classification.txt");
+        final content = "${prediction.label} (${prediction.confidencePercent})";
+        await classificationFile.writeAsString(content);
+        log("Prediction: $content Saved to $filePath/classification.txt");
       } catch (e) {
         log('Error saving file: $e');
       }
@@ -191,7 +193,9 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   )
-                                : Text(prediction!),
+                                : Text(
+                                    "${prediction!.label} — ${prediction!.confidencePercent}",
+                                  ),
                       ),
                     ),
                   ),
