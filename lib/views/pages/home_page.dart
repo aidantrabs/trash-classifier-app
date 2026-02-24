@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   late ClassifierModel model;
   String? prediction;
   bool _modelReady = false;
+  bool _modelLoadFailed = false;
 
   @override
   void initState() {
@@ -33,14 +34,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initModel() async {
-    await model.loadModel();
-    _modelReady = true;
+    final success = await model.loadModel();
+    if (!mounted) return;
+    _modelReady = success;
+    _modelLoadFailed = !success;
+    setState(() {});
   }
 
   Future<void> _onImageCaptured() async {
     final image = imageCapturedNotifier.value;
     if (image != null && _modelReady) {
       prediction = await model.runModel(image.path);
+      if (!mounted) {
+        return;
+      }
       setState(() {});
     }
   }
@@ -134,18 +141,20 @@ class _HomePageState extends State<HomePage> {
                           style: KTextStyle.descriptionStyle,
                         ),
 
-                        title: prediction == null
-                            ? Align(
-                                alignment: Alignment.center,
-                                child: SizedBox(
-                                  height: 25,
-                                  width: 25,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                  ),
-                                ),
-                              )
-                            : Text(prediction!),
+                        title: _modelLoadFailed
+                            ? Text("Model failed to load")
+                            : prediction == null
+                                ? Align(
+                                    alignment: Alignment.center,
+                                    child: SizedBox(
+                                      height: 25,
+                                      width: 25,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                      ),
+                                    ),
+                                  )
+                                : Text(prediction!),
                       ),
                     ),
                   ),

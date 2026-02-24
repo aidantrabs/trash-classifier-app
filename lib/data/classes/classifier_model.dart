@@ -24,15 +24,17 @@ class ClassifierModel {
     "Recycling (Plastic)",
   ];
 
-  Future<void> loadModel() async {
+  Future<bool> loadModel() async {
     try {
       _interpreter = await Interpreter.fromAsset(
         modelPath,
         options: InterpreterOptions()..threads = 4,
       );
       _interpreter.allocateTensors();
+      return true;
     } catch (e) {
       log("Error while Creating Interpreter: $e");
+      return false;
     }
   }
 
