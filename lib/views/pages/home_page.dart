@@ -77,14 +77,9 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Overwrite Existing Item?'),
         content: Text('"$name" already exists. Do you want to replace it?'),
         actions: [
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
+          OutlinedButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.primary),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Replace'),
           ),
@@ -94,10 +89,7 @@ class _HomePageState extends State<HomePage> {
     return result ?? false;
   }
 
-  Future<bool> _saveImage(
-    XFile image,
-    ClassificationResult? prediction,
-  ) async {
+  Future<bool> _saveImage(XFile image, ClassificationResult? prediction) async {
     final appDirectory = await getAppDirectory();
     final appDirectoryPath = appDirectory.path;
     final sanitizedName = _nameController.text.trim();
@@ -119,8 +111,7 @@ class _HomePageState extends State<HomePage> {
     final classificationFile = File('$filePath/classification.txt');
     if (prediction != null) {
       try {
-        final content =
-            '${prediction.label} (${prediction.confidencePercent})';
+        final content = '${prediction.label} (${prediction.confidencePercent})';
         await classificationFile.writeAsString(content);
         log('Prediction: $content Saved to $filePath/classification.txt');
       } on Exception catch (e) {
@@ -134,24 +125,12 @@ class _HomePageState extends State<HomePage> {
   Widget _buildClassificationValue() {
     final theme = Theme.of(context);
     if (_modelLoadFailed) {
-      return Text(
-        'Model failed to load',
-        style: theme.textTheme.bodyLarge?.copyWith(
-          color: theme.colorScheme.error,
-        ),
-      );
+      return Text('Model failed to load', style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.error));
     }
     if (prediction == null) {
-      return const SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      );
+      return const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2));
     }
-    return Text(
-      '${prediction!.label} — ${prediction!.confidencePercent}',
-      style: theme.textTheme.bodyLarge,
-    );
+    return Text('${prediction!.label} — ${prediction!.confidencePercent}', style: theme.textTheme.bodyLarge);
   }
 
   @override
@@ -182,10 +161,7 @@ class _HomePageState extends State<HomePage> {
                     constraints: const BoxConstraints(maxHeight: 400),
                     child: SizedBox(
                       width: double.infinity,
-                      child: Image.file(
-                        File(image.path),
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.file(File(image.path), fit: BoxFit.cover),
                     ),
                   ),
                 ),
@@ -193,10 +169,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: AppSpacing.md),
 
                 // ── Classification result ──────────────────────────
-                InfoCard(
-                  label: 'Classification',
-                  child: _buildClassificationValue(),
-                ),
+                InfoCard(label: 'Classification', child: _buildClassificationValue()),
 
                 const SizedBox(height: AppSpacing.sm),
 
@@ -205,10 +178,7 @@ class _HomePageState extends State<HomePage> {
                   label: 'Name',
                   child: TextFormField(
                     validator: validateItemName,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter object name',
-                      isDense: true,
-                    ),
+                    decoration: const InputDecoration(hintText: 'Enter object name', isDense: true),
                     controller: _nameController,
                     onEditingComplete: () => setState(() {}),
                   ),
@@ -226,12 +196,9 @@ class _HomePageState extends State<HomePage> {
                       tooltip: 'Delete',
                       onPressed: () {
                         _deleteImage();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            duration: Duration(seconds: 3),
-                            content: Text('Image deleted'),
-                          ),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(const SnackBar(duration: Duration(seconds: 3), content: Text('Image deleted')));
                       },
                     ),
                     ActionButton(
@@ -244,16 +211,13 @@ class _HomePageState extends State<HomePage> {
                           final saved = await _saveImage(image, prediction);
                           if (!saved) return;
 
-                          newSavedDataNotifier.value =
-                              !newSavedDataNotifier.value;
+                          newSavedDataNotifier.value = !newSavedDataNotifier.value;
                           if (!mounted) return;
 
                           messenger.showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 3),
-                              content: Text(
-                                'Image saved as: ${_nameController.text}',
-                              ),
+                              content: Text('Image saved as: ${_nameController.text}'),
                             ),
                           );
                           _deleteImage();

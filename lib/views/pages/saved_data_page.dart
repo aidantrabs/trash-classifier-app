@@ -76,12 +76,9 @@ class _SavedDataPageState extends State<SavedDataPage> {
                 borderRadius: AppSpacing.borderRadiusMd,
                 onPressed: (context) {
                   _deleteFolder(item);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      duration: Duration(seconds: 3),
-                      content: Text('Item deleted'),
-                    ),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(duration: Duration(seconds: 3), content: Text('Item deleted')));
                 },
                 icon: Icons.delete_outline,
               ),
@@ -90,12 +87,7 @@ class _SavedDataPageState extends State<SavedDataPage> {
           child: ItemListTile(
             title: item.name,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => SelectedItemPage(item: item),
-                ),
-              );
+              Navigator.push(context, MaterialPageRoute<void>(builder: (context) => SelectedItemPage(item: item)));
             },
           ),
         );

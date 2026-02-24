@@ -31,12 +31,7 @@ class _MainPageState extends State<MainPage> {
               if (selectedPage == 0)
                 IconButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (context) => const SettingsPage(),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const SettingsPage()));
                   },
                   icon: const Icon(Icons.settings_outlined),
                 )
@@ -45,8 +40,7 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           body: IndexedStack(index: selectedPage, children: _pages),
-          floatingActionButton:
-              selectedPage == 0 ? const CamerabuttonWidget() : null,
+          floatingActionButton: selectedPage == 0 ? const CamerabuttonWidget() : null,
           bottomNavigationBar: const NavbarWidget(),
         );
       },

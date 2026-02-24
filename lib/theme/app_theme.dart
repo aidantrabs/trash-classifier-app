@@ -31,9 +31,7 @@ abstract final class AppTheme {
       cardTheme: CardThemeData(
         color: scheme.surfaceContainerLow,
         elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppSpacing.borderRadiusMd,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.borderRadiusMd),
         margin: EdgeInsets.zero,
       ),
 
@@ -57,10 +55,7 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: scheme.surfaceContainerLow,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
         border: OutlineInputBorder(
           borderRadius: AppSpacing.borderRadiusSm,
           borderSide: BorderSide(color: scheme.outline),
@@ -76,21 +71,13 @@ abstract final class AppTheme {
       ),
 
       // ── Divider ──────────────────────────────────────────────────────
-      dividerTheme: DividerThemeData(
-        color: scheme.outline,
-        thickness: 1,
-        space: 0,
-      ),
+      dividerTheme: DividerThemeData(color: scheme.outline, thickness: 1, space: 0),
 
       // ── SnackBar ─────────────────────────────────────────────────────
       snackBarTheme: SnackBarThemeData(
         backgroundColor: scheme.primary,
-        contentTextStyle: textTheme.bodyMedium?.copyWith(
-          color: scheme.onPrimary,
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppSpacing.borderRadiusSm,
-        ),
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: scheme.onPrimary),
+        shape: const RoundedRectangleBorder(borderRadius: AppSpacing.borderRadiusSm),
         behavior: SnackBarBehavior.floating,
       ),
 

@@ -23,14 +23,9 @@ class _SettingsPageState extends State<SettingsPage> {
           'This action cannot be undone.',
         ),
         actions: [
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
+          OutlinedButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete All'),
           ),
@@ -42,12 +37,9 @@ class _SettingsPageState extends State<SettingsPage> {
       await clearAllSavedData();
       newSavedDataNotifier.value = !newSavedDataNotifier.value;
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(seconds: 3),
-          content: Text('All saved data cleared'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(duration: Duration(seconds: 3), content: Text('All saved data cleared')));
     }
   }
 
@@ -56,9 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
@@ -74,23 +64,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     await prefs.setBool(KConstant.darkModeKey, value);
                   },
                 ),
-                Divider(
-                  height: 1,
-                  indent: AppSpacing.md,
-                  endIndent: AppSpacing.md,
-                  color: theme.colorScheme.outline,
-                ),
+                Divider(height: 1, indent: AppSpacing.md, endIndent: AppSpacing.md, color: theme.colorScheme.outline),
                 ListTile(
                   title: Text(
                     'Clear All Data',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.error,
-                    ),
+                    style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.error),
                   ),
-                  trailing: Icon(
-                    Icons.delete_forever_outlined,
-                    color: theme.colorScheme.error,
-                  ),
+                  trailing: Icon(Icons.delete_forever_outlined, color: theme.colorScheme.error),
                   onTap: _clearAllData,
                 ),
               ],

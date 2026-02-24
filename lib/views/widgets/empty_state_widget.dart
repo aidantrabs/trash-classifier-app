@@ -3,12 +3,7 @@ import 'package:trash_classifier_app/theme/app_spacing.dart';
 
 /// A centered placeholder for empty screens (no image, no saved data, etc.).
 class EmptyStateWidget extends StatelessWidget {
-  const EmptyStateWidget({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    super.key,
-  });
+  const EmptyStateWidget({required this.icon, required this.title, this.subtitle, super.key});
 
   final IconData icon;
   final String title;
@@ -24,24 +19,14 @@ class EmptyStateWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: theme.colorScheme.secondary.withValues(alpha: 0.4),
-            ),
+            Icon(icon, size: 64, color: theme.colorScheme.secondary.withValues(alpha: 0.4)),
             const SizedBox(height: AppSpacing.md),
-            Text(
-              title,
-              style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
+            Text(title, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
             if (subtitle != null) ...[
               const SizedBox(height: AppSpacing.sm),
               Text(
                 subtitle!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.secondary,
-                ),
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.secondary),
                 textAlign: TextAlign.center,
               ),
             ],

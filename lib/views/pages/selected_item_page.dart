@@ -34,9 +34,7 @@ class _SelectedItemPageState extends State<SelectedItemPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(item.name),
-      ),
+      appBar: AppBar(title: Text(item.name)),
       body: _loaded
           ? SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -64,10 +62,7 @@ class _SelectedItemPageState extends State<SelectedItemPage> {
                   // ── Classification ───────────────────────────────
                   InfoCard(
                     label: 'Classification',
-                    child: Text(
-                      prediction ?? 'No classification data found',
-                      style: theme.textTheme.bodyLarge,
-                    ),
+                    child: Text(prediction ?? 'No classification data found', style: theme.textTheme.bodyLarge),
                   ),
                 ],
               ),

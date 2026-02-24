@@ -11,11 +11,7 @@ class NavbarWidget extends StatelessWidget {
       builder: (context, selectedPage, child) {
         return NavigationBar(
           destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
+            NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
             NavigationDestination(
               icon: Icon(Icons.bookmark_outline),
               selectedIcon: Icon(Icons.bookmark),

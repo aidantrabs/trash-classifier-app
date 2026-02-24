@@ -47,8 +47,7 @@ Future<void> deleteSelectedFolder(SavedItem item) async {
 
 Future<void> clearAllSavedData() async {
   final appDirectory = await getAppDirectory();
-  final userSavedDataDir =
-      Directory('${appDirectory.path}/user_saved_data');
+  final userSavedDataDir = Directory('${appDirectory.path}/user_saved_data');
   if (await userSavedDataDir.exists()) {
     await userSavedDataDir.delete(recursive: true);
     await userSavedDataDir.create();

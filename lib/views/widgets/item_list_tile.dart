@@ -4,12 +4,7 @@ import 'package:trash_classifier_app/theme/app_spacing.dart';
 /// A card-style list row for displaying saved items.
 /// Used by both saved_data_page and search results.
 class ItemListTile extends StatelessWidget {
-  const ItemListTile({
-    required this.title,
-    required this.onTap,
-    this.trailing,
-    super.key,
-  });
+  const ItemListTile({required this.title, required this.onTap, this.trailing, super.key});
 
   final String title;
   final VoidCallback onTap;
@@ -24,23 +19,12 @@ class ItemListTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: AppSpacing.borderRadiusMd,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.md,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
           child: Row(
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.bodyLarge,
-                ),
-              ),
+              Expanded(child: Text(title, style: theme.textTheme.bodyLarge)),
               if (trailing != null) trailing!,
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.secondary,
-              ),
+              Icon(Icons.chevron_right, color: theme.colorScheme.secondary),
             ],
           ),
         ),

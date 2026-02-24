@@ -26,11 +26,7 @@ class _CameraPageState extends State<CameraPage> {
   String? _cameraError;
   int _flashSetting = 0;
 
-  final List<IconData> _flashIcons = [
-    Icons.flash_off,
-    Icons.flash_on,
-    Icons.flash_auto,
-  ];
+  final List<IconData> _flashIcons = [Icons.flash_off, Icons.flash_on, Icons.flash_auto];
 
   @override
   void initState() {
@@ -81,7 +77,7 @@ class _CameraPageState extends State<CameraPage> {
       setState(() {
         _cameraError = e.code == 'CameraAccessDenied'
             ? 'Camera access denied. Please enable camera '
-                'permissions in Settings.'
+                  'permissions in Settings.'
             : 'Failed to initialize camera.';
       });
       log('Camera init error: $e');
@@ -111,7 +107,7 @@ class _CameraPageState extends State<CameraPage> {
       setState(() {
         _cameraError = e.code == 'CameraAccessDenied'
             ? 'Camera access denied. Please enable camera '
-                'permissions in Settings.'
+                  'permissions in Settings.'
             : 'Failed to initialize camera.';
       });
       log('Camera flip error: $e');
@@ -158,10 +154,7 @@ class _CameraPageState extends State<CameraPage> {
               setState(() {});
               log('Camera Flip Pressed');
             },
-            icon: const Icon(
-              Icons.flip_camera_ios_outlined,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.flip_camera_ios_outlined, color: Colors.white),
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -179,10 +172,7 @@ class _CameraPageState extends State<CameraPage> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
-              child: ClipRRect(
-                borderRadius: AppSpacing.borderRadiusLg,
-                child: CameraPreview(_controller),
-              ),
+              child: ClipRRect(borderRadius: AppSpacing.borderRadiusLg, child: CameraPreview(_controller)),
             ),
           ),
 
@@ -196,11 +186,7 @@ class _CameraPageState extends State<CameraPage> {
                 Expanded(
                   child: IconButton(
                     onPressed: pickImage,
-                    icon: const Icon(
-                      Icons.photo_outlined,
-                      size: 32,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.photo_outlined, size: 32, color: Colors.white),
                   ),
                 ),
 
@@ -225,10 +211,7 @@ class _CameraPageState extends State<CameraPage> {
                       ),
                       padding: const EdgeInsets.all(4),
                       child: const DecoratedBox(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
                       ),
                     ),
                   ),
