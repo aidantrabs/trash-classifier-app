@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:trash_classifier_app/data/classes/custom_search_delegate.dart';
+import 'package:trash_classifier_app/data/classes/saved_item.dart';
 import 'package:trash_classifier_app/utils/app_directory.dart';
 
 class SearchBarWidget extends StatefulWidget {
@@ -13,7 +12,7 @@ class SearchBarWidget extends StatefulWidget {
 }
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
-  List<Directory> loadedFolders = [];
+  List<SavedItem> loadedFolders = [];
 
   Future<void> _loadContent() async {
     loadedFolders = await loadFolders();

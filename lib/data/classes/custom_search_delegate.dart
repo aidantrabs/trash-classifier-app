@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:trash_classifier_app/data/classes/saved_item.dart';
 import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/views/pages/selected_item_page.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   /// Holds widgets which give functionality to the search bar. (Ui of the search bar + Displaying the results)
-  List<Directory> loadedFolders;
+  List<SavedItem> loadedFolders;
 
   CustomSearchDelegate({required this.loadedFolders});
 
@@ -36,18 +34,17 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
   Widget _buildMatchList(BuildContext context) {
-    List<Directory> matchQuery = [];
-    for (var folder in loadedFolders) {
-      if (basename(folder.path).toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(folder);
+    List<SavedItem> matchQuery = [];
+    for (var item in loadedFolders) {
+      if (item.name.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(item);
       }
     }
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 8),
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
-        final Directory folder = matchQuery[index];
-        final String folderName = basename(folder.path);
+        final SavedItem item = matchQuery[index];
         return Column(
           children: [
             ListTile(
@@ -56,13 +53,13 @@ class CustomSearchDelegate extends SearchDelegate {
                 vertical: 8.0,
                 horizontal: 8.0,
               ),
-              title: Text(folderName, style: KTextStyle.labelStyle),
+              title: Text(item.name, style: KTextStyle.labelStyle),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return SelectedItemPage(directory: folder);
+                      return SelectedItemPage(item: item);
                     },
                   ),
                 );

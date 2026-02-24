@@ -1,16 +1,16 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:trash_classifier_app/data/classes/saved_item.dart';
 
 Future<Directory> getAppDirectory() async {
   /// Returns the applications documents directory
   return (await getApplicationDocumentsDirectory());
 }
 
-Future<List<Directory>> loadFolders() async {
-  /// Returns a list of all user saved folders in the application documents directory
+Future<List<SavedItem>> loadFolders() async {
+  /// Returns a list of all user saved items in the application documents directory
 
   final Directory appDirectory = await getAppDirectory();
   final String appDirectoryPath = appDirectory.path;
@@ -26,28 +26,25 @@ Future<List<Directory>> loadFolders() async {
   final List<FileSystemEntity> userSavedDataContents = await userSavedDataDir
       .list()
       .toList();
-  final List<Directory> allFolders = [];
+  final List<SavedItem> allItems = [];
 
   for (final entity in userSavedDataContents) {
-    //Load Directory
     if (entity is Directory) {
       log('Folder: ${entity.path}');
-      allFolders.add(entity);
+      allItems.add(SavedItem(directory: entity));
     }
   }
-  allFolders.sort((a, b) {
-    return a.path.toLowerCase().compareTo(b.path.toLowerCase());
+  allItems.sort((a, b) {
+    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
   });
-  return allFolders;
+  return allItems;
 }
 
-Future<void> deleteSelectedFolder(Directory folder) async {
-  /// Deletes a selected folder from the application document directory
+Future<void> deleteSelectedFolder(SavedItem item) async {
+  /// Deletes a saved item from the application document directory
   try {
-    if (await folder.exists()) {
-      await folder.delete(recursive: true);
-      log("Deleted Item: ${basename(folder.path)}");
-    }
+    await item.delete();
+    log("Deleted Item: ${item.name}");
   } catch (e) {
     log("Error deleting folder: $e");
   }

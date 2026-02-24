@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:path/path.dart';
+import 'package:trash_classifier_app/data/classes/saved_item.dart';
 import 'package:trash_classifier_app/data/constants.dart';
 import 'package:trash_classifier_app/data/notifiers.dart';
 import 'package:trash_classifier_app/utils/app_directory.dart';
@@ -17,7 +15,7 @@ class SavedDataPage extends StatefulWidget {
 }
 
 class _SavedDataPageState extends State<SavedDataPage> {
-  List<Directory> loadedFolders = [];
+  List<SavedItem> loadedFolders = [];
 
   @override
   void initState() {
@@ -43,10 +41,10 @@ class _SavedDataPageState extends State<SavedDataPage> {
     setState(() {});
   }
 
-  Future<void> _deleteFolder(Directory folder) async {
-    await deleteSelectedFolder(folder);
+  Future<void> _deleteFolder(SavedItem item) async {
+    await deleteSelectedFolder(item);
     setState(() {
-      loadedFolders.remove(folder);
+      loadedFolders.remove(item);
     });
   }
 
@@ -57,8 +55,7 @@ class _SavedDataPageState extends State<SavedDataPage> {
         padding: EdgeInsets.symmetric(horizontal: 8),
         itemCount: loadedFolders.length,
         itemBuilder: (context, index) {
-          final Directory folder = loadedFolders[index];
-          final String folderName = basename(folder.path);
+          final SavedItem item = loadedFolders[index];
           return Column(
             children: [
               Slidable(
@@ -69,7 +66,7 @@ class _SavedDataPageState extends State<SavedDataPage> {
                     SlidableAction(
                       backgroundColor: Colors.red,
                       onPressed: ((context) {
-                        _deleteFolder(folder);
+                        _deleteFolder(item);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             duration: Duration(seconds: 3),
@@ -88,13 +85,13 @@ class _SavedDataPageState extends State<SavedDataPage> {
                     horizontal: 8.0,
                   ),
 
-                  title: Text(folderName, style: KTextStyle.labelStyle),
+                  title: Text(item.name, style: KTextStyle.labelStyle),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return (SelectedItemPage(directory: folder));
+                          return SelectedItemPage(item: item);
                         },
                       ),
                     );
